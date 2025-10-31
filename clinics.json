@@ -1,0 +1,233 @@
+[
+  //NOTE: THIS INFO IS NOT ACCURATE !!! MOST OF IT IS JUST RANDOM DUE TO TIME !!!!
+  //Each entry below represents one clinic or healthcare center
+  // Fields:
+  // id = unique number for each clinic
+  // name = clinic name
+  // lat/lng = map coordinates
+  // state & city = used for filtering by location
+  // insurances = list of accepted insurance providers
+  // type = type of clinic (regular, urgent, gyn, pediatrics)
+  // address = street location shown to user
+
+  {
+    "id": 1,
+    "name": "Montgomery Health Clinic",
+    "lat": 39.0260,
+    "lng": -76.9969,
+    "state": "MD",
+    "city": "Rockville",
+    "insurances": ["Aetna", "BlueCross", "Medicaid"],
+    "type": "regular",
+    "address": "14800 Physicians Ln"
+  },
+  {
+    "id": 2,
+    "name": "Capital Pediatrics",
+    "lat": 38.9072,
+    "lng": -77.0369,
+    "state": "DC",
+    "city": "Washington",
+    "insurances": ["Cigna", "Aetna"],
+    "type": "pediatrics",
+    "address": "10 Kids St"
+  },
+  {
+    "id": 3,
+    "name": "Baltimore Urgent Care",
+    "lat": 39.2904,
+    "lng": -76.6122,
+    "state": "MD",
+    "city": "Baltimore",
+    "insurances": ["Humana", "BlueCross"],
+    "type": "urgent",
+    "address": "77 Quickcare Rd"
+  },
+  {
+    "id": 4,
+    "name": "Women’s Health Center",
+    "lat": 38.9077,
+    "lng": -77.0089,
+    "state": "DC",
+    "city": "Washington",
+    "insurances": ["Aetna", "Cigna"],
+    "type": "gyn",
+    "address": "200 Wellness Ave"
+  },
+  {
+    "id": 5,
+    "name": "Frederick Family Clinic",
+    "lat": 39.4143,
+    "lng": -77.4105,
+    "state": "MD",
+    "city": "Frederick",
+    "insurances": ["Medicaid", "BlueCross"],
+    "type": "regular",
+    "address": "5 Main St"
+  },
+  {
+    "id": 6,
+    "name": "Annapolis Urgent Care",
+    "lat": 38.9784,
+    "lng": -76.4922,
+    "state": "MD",
+    "city": "Annapolis",
+    "insurances": ["Aetna", "Cigna"],
+    "type": "urgent",
+    "address": "45 Rapid Rd"
+  },
+  {
+    "id": 7,
+    "name": "DC Family Health",
+    "lat": 38.8951,
+    "lng": -77.0364,
+    "state": "DC",
+    "city": "Washington",
+    "insurances": ["BlueCross", "Medicaid"],
+    "type": "regular",
+    "address": "150 Family St"
+  },
+  {
+    "id": 8,
+    "name": "Prince George’s Pediatrics",
+    "lat": 38.7849,
+    "lng": -76.8721,
+    "state": "MD",
+    "city": "Bowie",
+    "insurances": ["Cigna", "Humana"],
+    "type": "pediatrics",
+    "address": "22 Child Ln"
+  },
+  {
+    "id": 9,
+    "name": "Rockville Women’s Clinic",
+    "lat": 39.0839,
+    "lng": -77.1528,
+    "state": "MD",
+    "city": "Rockville",
+    "insurances": ["Aetna", "Medicaid"],
+    "type": "gyn",
+    "address": "300 Wellness Blvd"
+  },
+  {
+    "id": 10,
+    "name": "Silver Spring Urgent Care",
+    "lat": 39.0250,
+    "lng": -77.0050,
+    "state": "MD",
+    "city": "Silver Spring",
+    "insurances": ["BlueCross", "Cigna", "Humana"],
+    "type": "urgent",
+    "address": "99 FastCare St"
+  },
+  {
+    "id": 11,
+    "name": "Chicago Family Clinic",
+    "lat": 41.8781,
+    "lng": -87.6298,
+    "state": "IL",
+    "city": "Chicago",
+    "insurances": ["Aetna", "Humana"],
+    "type": "regular",
+    "address": "101 Health Ave"
+  },
+  {
+    "id": 12,
+    "name": "New York Wellness Center",
+    "lat": 40.7128,
+    "lng": -74.0060,
+    "state": "NY",
+    "city": "New York",
+    "insurances": ["Cigna", "BlueCross"],
+    "type": "regular",
+    "address": "250 Broadway"
+  },
+  {
+    "id": 13,
+    "name": "Los Angeles Urgent Care",
+    "lat": 34.0522,
+    "lng": -118.2437,
+    "state": "CA",
+    "city": "Los Angeles",
+    "insurances": ["Aetna", "Medi-Cal", "BlueCross"],
+    "type": "urgent",
+    "address": "400 Sunset Blvd"
+  },
+  {
+    "id": 14,
+    "name": "Houston Women’s Clinic",
+    "lat": 29.7604,
+    "lng": -95.3698,
+    "state": "TX",
+    "city": "Houston",
+    "insurances": ["Cigna", "Aetna", "Humana"],
+    "type": "gyn",
+    "address": "999 Medical Pkwy"
+  },
+  {
+    "id": 15,
+    "name": "Dallas Pediatrics",
+    "lat": 32.7767,
+    "lng": -96.7970,
+    "state": "TX",
+    "city": "Dallas",
+    "insurances": ["BlueCross", "Medicaid"],
+    "type": "pediatrics",
+    "address": "88 Kids Care Rd"
+  },
+  {
+    "id": 16,
+    "name": "Boston Community Clinic",
+    "lat": 42.3601,
+    "lng": -71.0589,
+    "state": "MA",
+    "city": "Boston",
+    "insurances": ["Aetna", "BlueCross"],
+    "type": "regular",
+    "address": "77 Harbor St"
+  },
+  {
+    "id": 17,
+    "name": "Miami Family Health",
+    "lat": 25.7617,
+    "lng": -80.1918,
+    "state": "FL",
+    "city": "Miami",
+    "insurances": ["Humana", "Cigna"],
+    "type": "regular",
+    "address": "250 Beach Dr"
+  },
+  {
+    "id": 18,
+    "name": "Seattle Urgent Care",
+    "lat": 47.6062,
+    "lng": -122.3321,
+    "state": "WA",
+    "city": "Seattle",
+    "insurances": ["Aetna", "BlueCross", "Cigna"],
+    "type": "urgent",
+    "address": "12 Rainy Ave"
+  },
+  {
+    "id": 19,
+    "name": "Atlanta Pediatrics",
+    "lat": 33.7490,
+    "lng": -84.3880,
+    "state": "GA",
+    "city": "Atlanta",
+    "insurances": ["BlueCross", "Humana"],
+    "type": "pediatrics",
+    "address": "500 Peach Blvd"
+  },
+  {
+    "id": 20,
+    "name": "Denver Health Center",
+    "lat": 39.7392,
+    "lng": -104.9903,
+    "state": "CO",
+    "city": "Denver",
+    "insurances": ["Cigna", "Aetna", "Medicaid"],
+    "type": "regular",
+    "address": "300 Mountain Rd"
+  }
+]
