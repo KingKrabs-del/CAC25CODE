@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Clinic Finder Map</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; }
+    #map { height: 72vh; width: 100%; }
+    .controls { padding: 10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .controls select, .controls input { padding:6px; font-size:14px; }
+    .legend { padding:8px; font-size:14px; }
+    .info { padding:10px; }
+  </style>
+</head>
+<body>
+  <h2 style="margin:10px 12px 0 12px">Clinic Finder — filter by insurance / state / city / type</h2>
+
+  <div class="controls" style="margin:8px 12px">
+    <label>State:
+      <select id="stateSelect"><option value="all">All</option></select>
+    </label>
+
+    <label>City:
+      <input id="cityInput" placeholder="type city (partial ok)" />
+    </label>
+
+    <label>Insurance:
+      <input id="insInput" placeholder="e.g. Aetna (comma ok)" />
+    </label>
+
+    <label>Type:
+      <select id="typeSelect">
+        <option value="all">All</option>
+        <option value="regular">Regular Clinic</option>
+        <option value="urgent">Urgent Care</option>
+        <option value="gyn">GYN</option>
+        <option value="pediatrics">Pediatrics</option>
+      </select>
+    </label>
+
+    <button id="applyBtn">Apply Filters</button>
+    <button id="resetBtn">Reset</button>
+
+    <div style="margin-left:auto" class="legend">
+      <strong>Markers:</strong> click for details
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="info" id="status" style="padding:8px 12px"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <script>
+    // ==== CONFIG ====
+    const API_BASE = "https://python-ishattaaziz123.replit.app";
+    const CLINICS_ENDPOINT = API_BASE + "/clinics";
+
+    // Initialize map centered on US
+    const map = L.map('map').setView([39.0, -95.5], 4);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Initialize marker cluster group
+    const markers = L.markerClusterGroup();
+    map.addLayer(markers);
+
+    // Fetch state boundaries GeoJSON and display on map
+    const STATES_GEOJSON_URL = 'https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json';
+    fetch(STATES_GEOJSON_URL)
+      .then(r => r.json())
+      .then(geo => {
+        L.geoJSON(geo, { style: { color: '#444', weight: 1, fill:false } }).addTo(map);
+      })
+      .catch(()=> console.log("Could not load state outlines"));
+
+    // Grab references to UI elements
+    const stateSelect = document.getElementById("stateSelect");
+    const cityInput = document.getElementById("cityInput");
+    const insInput = document.getElementById("insInput");
+    const typeSelect = document.getElementById("typeSelect");
+    const applyBtn = document.getElementById("applyBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const status = document.getElementById("status");
+
+    // Store clinic data once loaded
+    let allClinics = [];
+
+    // Populate state dropdown from clinic data
+    function populateStateSelect(data) {
+      const states = new Set(data.map(c => c.state).filter(Boolean));
+      // Remove old options
+      Array.from(stateSelect.options).slice(1).forEach(o => o.remove());
+      // Add sorted states to dropdown
+      Array.from(states).sort().forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s;
+        opt.text = s;
+        stateSelect.appendChild(opt);
+      });
+    }
+
+    // Show clinics on map
+    function showClinicsOnMap(list) {
+      markers.clearLayers(); // Remove old markers
+      list.forEach(c => {
+        const marker = L.marker([c.lat, c.lng]); // Create marker
+        const popupHtml = `
+          <b>${c.name}</b><br/>
+          ${c.address ? c.address + "<br/>" : ""}
+          ${c.city}, ${c.state}<br/>
+          <b>Type:</b> ${c.type}<br/>
+          <b>Insurances:</b> ${c.insurances.join(", ")}
+        `;
+        marker.bindPopup(popupHtml);
+        markers.addLayer(marker); // Add to cluster group
+      });
+      status.innerText = `Showing ${list.length} clinics (total ${allClinics.length})`;
+
+      // Zoom map to fit all shown markers
+      if (list.length > 0) {
+        const group = L.featureGroup(list.map(c => L.marker([c.lat, c.lng])));
+        map.fitBounds(group.getBounds().pad(0.2));
+      }
+    }
+
+    // Filter clinics by UI inputs
+    function filterClinics(state, city, insurance, ctype) {
+      let filtered = allClinics.slice(); // copy all clinics
+
+      // Filter by state if selected
+      if (state && state.toLowerCase() !== "all") {
+        filtered = filtered.filter(c => c.state && c.state.toLowerCase() === state.toLowerCase());
+      }
+
+      // Filter by cit
+      if (city) {
+        filtered = filtered.filter(c => c.city && c.city.toLowerCase().includes(city.toLowerCase()));
+      }
+
+      // Filter by insurance
+      if (insurance) {
+        const wanted = insurance.split(",").map(s => s.trim().toLowerCase());
+        filtered = filtered.filter(c => {
+          const has = (c.insurances || []).map(x => x.toLowerCase());
+          return wanted.some(w => has.includes(w));
+        });
+      }
+
+      // Filter by clinic type
+      if (ctype && ctype.toLowerCase() !== "all") {
+        filtered = filtered.filter(c => (c.type || "").toLowerCase() === ctype.toLowerCase());
+      }
+
+      return filtered; // return filtered list
+    }
+
+    // Load clinics
+    async function loadClinics() {
+      try {
+        let data;
+        if (API_BASE) {
+          const url = new URL(CLINICS_ENDPOINT, location.href);
+          const resp = await fetch(url, { cache: "no-cache" }); // fetch all clinics
+          const json = await resp.json();
+          data = json.clinics || [];
+        } else {
+          // fallback to local static file
+          const r = await fetch("clinics.json");
+          data = await r.json();
+        }
+
+        allClinics = data; // store clinics
+        populateStateSelect(allClinics); // populate dropdown
+        showClinicsOnMap(allClinics); // show all clinics initially
+      } catch (err) {
+        status.innerText = "Failed to load clinics: " + err;
+      }
+    }
+
+    // Apply filters button click
+    applyBtn.addEventListener("click", async () => {
+      const state = stateSelect.value;
+      const city = cityInput.value.trim();
+      const insurance = insInput.value.trim();
+      const type = typeSelect.value;
+
+      if (API_BASE) {
+        // Backend filtering/query API with parameters
+        const params = new URLSearchParams();
+        if (state && state !== "all") params.set("state", state);
+        if (city) params.set("city", city);
+        if (insurance) params.set("insurance", insurance);
+        if (type && type !== "all") params.set("type", type);
+
+        const resp = await fetch(CLINICS_ENDPOINT + "?" + params.toString());
+        const json = await resp.json();
+        const list = json.clinics || [];
+        showClinicsOnMap(list);
+      } else {
+        // Frontend filtering
+        const list = filterClinics(state, city, insurance, type);
+        showClinicsOnMap(list);
+      }
+    });
+
+    // Reset button
+    resetBtn.addEventListener("click", () => {
+      stateSelect.value = "all";
+      cityInput.value = "";
+      insInput.value = "";
+      typeSelect.value = "all";
+      showClinicsOnMap(allClinics);
+    });
+
+    // Load clinics on page load
+    loadClinics();
+  </script>
+</body>
+</html>
